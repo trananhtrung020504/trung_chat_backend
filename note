@@ -1,0 +1,2 @@
+npm i -D typescript @types/node @types/express @types/bcrypt @types/jsonwebtoken  @types/pg ts-node-dev
+npm i nodemon
