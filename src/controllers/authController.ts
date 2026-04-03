@@ -29,8 +29,8 @@ export const login = async (req: Request, res: Response) => {
         // Nếu cần truyền 2 tham số:  ( SELECT * FROM users WHERE email = $1 AND username = $2 ) 
         const result = await pool.query('select * from users where email=$1' ,[email])
 
-        console.log('email: ',email);
-        console.log('result: ',result);
+        // console.log('email: ',email);
+        // console.log('result: ',result);
 
         const user = result.rows[0]
 
