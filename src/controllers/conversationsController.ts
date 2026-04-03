@@ -8,7 +8,27 @@ let userId = null;
   }
   try {
     const result = await pool.query(
-      "SELECT c.id AS conversation_id, u.username as participant_name, m.content as last_message, m.created_at as last_message_time from conversations c join users u on (u.id = c.participant_two and u.id != $1) Left join lateral (select content,created_at from messages where conversation_id = c.id order by created_at desc limit 1) m on true where c.participant_one = $1 OR c.participant_two = $1 order by m.created_at desc",
+      `
+      select c.id as conversation_id,
+      case
+        when u1.id = $1 then u2.username
+        else u1.username
+      end as participant_name,
+      m.content as last_message,
+      m.created_at as last_message_time
+      from conversations c
+      join users u1 on u1.id = c.participant_one
+      join users u2 on u2.id = c.participant_two
+      left join lateral (
+        select content, created_at
+        from messages
+        where conversation_id = c.id
+        order by created_at desc
+        limit 1
+      ) m on true
+       where c.participant_one = $1 or c.participant_two = $1
+        order by m.created_at desc;
+      `, // để ý dấu ","
       [userId],
     );
 
