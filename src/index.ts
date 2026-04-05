@@ -6,6 +6,7 @@ import messageRoutes from './routes/messagesRoutes'
 import http from 'http'
 import {Server} from 'socket.io'
 import { saveMessage } from './controllers/messagesController'
+import contactRoutes from './routes/contactsRoutes'
 const app = express()
 
 const server = http.createServer(app)
@@ -19,6 +20,7 @@ app.use(json())
 app.use('/api/auth',authRoutes)
 app.use('/api/conversations',conversationRoutes)
 app.use('/api/messages',messageRoutes)
+app.use('/api/contacts',contactRoutes)
 
 io.on("connection", (socket) => {
     socket.on('joinConversation',(conversationId) => {

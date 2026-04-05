@@ -37,3 +37,37 @@ let userId = null;
     res.status(500).json({error: "Lấy danh sách cuộc trò chuyện thất bại"})
   }
 }
+
+export const checkOrCreateConversation = async (req: Request, res: Response) => {
+
+  let userId = null;
+  if (req.user) {
+    userId = req.user.id;
+  }
+
+  const {contactId} = req.body;
+  try{
+    const existingConversation = await pool.query(
+      `
+      select id from conversations 
+      where (participant_one = $1 and participant_two = $2) 
+         or (participant_one = $2 and participant_two = $1)
+      `,
+      [userId, contactId]
+    )
+
+    if(existingConversation.rowCount != null && existingConversation.rowCount > 0){
+      return res.json({conversationId: existingConversation.rows[0].id})
+    }
+
+    const newConversation = await pool.query(
+      `insert into conversations (participant_one, participant_two) values ($1, $2) returning id`,
+      [userId, contactId]
+    )
+    return res.json({conversationId: newConversation.rows[0].id})
+
+  }catch(e){
+    console.error("Lỗi khi kiểm tra hoặc tạo cuộc trò chuyện: ", e)
+    return res.status(500).json({message: "Lỗi khi kiểm tra hoặc tạo cuộc trò chuyện"})
+  }
+}
