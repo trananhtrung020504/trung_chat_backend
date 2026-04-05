@@ -33,6 +33,7 @@ io.on("connection", (socket) => {
             const savedMessage = await saveMessage(conversationId,content,senderId)
             console.log("send message: ",savedMessage);
             io.to(conversationId).emit('newMessage', savedMessage)
+            io.emit('conversationUpdated', { conversationId, lastMessage: savedMessage.content, lastMessageTime: savedMessage.created_at })
         }catch(e){
                 console.error("Lỗi khi lưu tin nhắn: ", e)
 
